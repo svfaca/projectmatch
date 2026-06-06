@@ -1,56 +1,65 @@
-# Welcome to your Expo app 👋
+ # ProjectMatch
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+ Projeto de matchmaking para colaboradores de projetos — gerencia e conecta criadores e builders.
 
-## Get started
+ ## Visão geral
 
-1. Install dependencies
+ Web e mobile (Expo/React Native) app para criar, buscar e casar projetos com construtores interessados.
 
-   ```bash
-   npm install
-   ```
+ ## Pré-requisitos
 
-2. Start the app
+ - Node.js (>=16)
+ - npm ou Yarn
+ - Expo CLI (opcional)
 
-   ```bash
-   npx expo start
-   ```
+ ## Instalação
 
-In the output, you'll find options to open the app in a
+ 1. Instale dependências:
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+ ```bash
+ npm install
+ # ou
+ # yarn
+ ```
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+ 2. Instale dependências nativas do Expo (se necessário):
 
-## Get a fresh project
+ ```bash
+ npx expo install
+ ```
 
-When you're ready, run:
+ ## Executando
 
-```bash
-npm run reset-project
-```
+ - Iniciar o servidor de desenvolvimento:
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+ ```bash
+ npm start
+ # ou
+ # expo start
+ ```
 
-### Other setup steps
+ - Abrir no emulador/dispositivo móvel via Expo Go ou no navegador (web).
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+ ## Variáveis de ambiente
 
-## Learn more
+ Coloque chaves/segredos sensíveis em um arquivo `.env` (não comitado). Exemplos:
 
-To learn more about developing your project with Expo, look at the following resources:
+ ```
+ FIREBASE_API_KEY=...
+ FIREBASE_AUTH_DOMAIN=...
+ ```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+ ## Estrutura
 
-## Join the community
+ Principais pastas:
 
-Join our community of developers creating universal apps.
+ - `src/` — código-fonte da aplicação
+ - `assets/` — imagens e ícones
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+ ## Contribuição
+
+ Abra PRs contra a branch `main`. Siga padrões já existentes no código.
+
+ ## Licença
+
+ Veja o arquivo `LICENSE`.

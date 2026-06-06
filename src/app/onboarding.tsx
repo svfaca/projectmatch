@@ -1,3 +1,12 @@
+import {
+    AppButton,
+    AppTextField,
+    BrandMark,
+    ModernScreen,
+    StepIndicator,
+    SurfaceCard,
+    palette,
+} from "@/components/ui/projectmatch-ui";
 import { ROLE_STORAGE_KEY } from "@/constants/storage";
 import { auth } from "@/services/firebase";
 import { getSessionSnapshot } from "@/services/session";
@@ -5,15 +14,7 @@ import { getUserProfile, saveOnboardingData } from "@/services/users";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
-import {
-    ActivityIndicator,
-    Alert,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
-} from "react-native";
+import { ActivityIndicator, Alert, StyleSheet, Text, View } from "react-native";
 
 type Role = "creator" | "builder";
 
@@ -115,115 +116,119 @@ export default function OnboardingScreen() {
 
   if (loading) {
     return (
-      <View style={styles.container}>
-        <ActivityIndicator size="large" color="#fff" />
-      </View>
+      <ModernScreen contentStyle={styles.loadingState}>
+        <ActivityIndicator size="large" color={palette.primary} />
+      </ModernScreen>
     );
   }
 
   if (!role) {
     return (
-      <View style={styles.container}>
-        <Text style={styles.title}>Role não selecionado</Text>
-      </View>
+      <ModernScreen contentStyle={styles.loadingState}>
+        <Text style={styles.errorTitle}>Role não selecionado</Text>
+      </ModernScreen>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.card}>
-        <Text style={styles.heading}>
-          Primeiros passos — {role === "creator" ? "Criador" : "Construtor"}
+    <ModernScreen scrollable contentStyle={styles.container}>
+      <View style={styles.header}>
+        <BrandMark compact />
+        <Text style={styles.kicker}>Onboarding</Text>
+        <Text style={styles.title}>Complete seu perfil em poucos passos.</Text>
+        <Text style={styles.subtitle}>
+          {role === "creator"
+            ? "Organizamos as informações para conectar sua ideia às pessoas certas."
+            : "Conte um pouco sobre você para encontrar projetos compatíveis."}
+        </Text>
+      </View>
+
+      <StepIndicator
+        steps={["Perfil", role === "creator" ? "Ideia" : "Skills", "Concluir"]}
+        activeStep={1}
+      />
+
+      <SurfaceCard style={styles.card}>
+        <Text style={styles.cardTitle}>
+          Primeiros passos - {role === "creator" ? "Criador" : "Construtor"}
         </Text>
 
-        <Text style={styles.label}>Universidade</Text>
-        <TextInput
-          style={styles.input}
+        <AppTextField
+          label="Universidade"
           value={university}
           onChangeText={setUniversity}
           placeholder="Universidade"
-          placeholderTextColor="#94a3b8"
         />
 
-        <Text style={styles.label}>Curso</Text>
-        <TextInput
-          style={styles.input}
+        <AppTextField
+          label="Curso"
           value={course}
           onChangeText={setCourse}
           placeholder="Curso"
-          placeholderTextColor="#94a3b8"
         />
 
         {role === "builder" && (
-          <>
-            <Text style={styles.label}>Skills (separadas por vírgula)</Text>
-            <TextInput
-              style={styles.input}
-              value={skills}
-              onChangeText={setSkills}
-              placeholder="React, Node, UX"
-              placeholderTextColor="#94a3b8"
-            />
-          </>
+          <AppTextField
+            label="Skills (separadas por vírgula)"
+            value={skills}
+            onChangeText={setSkills}
+            placeholder="React, Node, UX"
+          />
         )}
 
-        <TouchableOpacity
-          style={styles.primaryButton}
+        <AppButton
+          title={saving ? "Salvando..." : "Continuar"}
           onPress={handleSubmit}
           disabled={saving}
-        >
-          <Text style={styles.primaryButtonText}>
-            {saving ? "Salvando..." : "Continuar"}
-          </Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+        />
+      </SurfaceCard>
+    </ModernScreen>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: "#0b1020",
-    justifyContent: "center",
-    padding: 24,
+    gap: 16,
   },
   card: {
-    gap: 12,
-    borderRadius: 18,
-    padding: 20,
-    backgroundColor: "#0f1724",
+    gap: 16,
   },
-  heading: {
-    color: "#fff",
-    fontSize: 20,
-    fontWeight: "700",
+  header: {
+    gap: 10,
+    paddingTop: 8,
+  },
+  kicker: {
+    color: palette.primary,
+    fontSize: 13,
+    fontWeight: "800",
+    textTransform: "uppercase",
+    letterSpacing: 1,
   },
   title: {
-    color: "#ffffff",
-    fontSize: 24,
-    fontWeight: "700",
+    color: palette.textPrimary,
+    fontSize: 28,
+    lineHeight: 34,
+    fontWeight: "800",
+    letterSpacing: -0.5,
   },
-  label: {
-    color: "#cbd5e1",
-    marginTop: 8,
+  subtitle: {
+    color: palette.textSecondary,
+    fontSize: 15,
+    lineHeight: 22,
   },
-  input: {
-    marginTop: 6,
-    padding: 10,
-    borderRadius: 10,
-    backgroundColor: "rgba(255,255,255,0.04)",
-    color: "#fff",
+  cardTitle: {
+    color: palette.textPrimary,
+    fontSize: 18,
+    fontWeight: "800",
+    letterSpacing: -0.2,
   },
-  primaryButton: {
-    marginTop: 16,
-    borderRadius: 12,
-    backgroundColor: "#4f46e5",
-    paddingVertical: 12,
+  loadingState: {
     alignItems: "center",
+    justifyContent: "center",
   },
-  primaryButtonText: {
-    color: "#fff",
+  errorTitle: {
+    color: palette.textPrimary,
+    fontSize: 20,
     fontWeight: "700",
   },
 });

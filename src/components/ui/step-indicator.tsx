@@ -22,7 +22,9 @@ export function StepIndicator({ steps, currentStep }: StepIndicatorProps) {
         return (
           <View key={step} style={styles.stepBlock}>
             <View style={[styles.stepDot, active && styles.stepDotActive]}>
-              <Text style={[styles.stepNumber, active && styles.stepNumberActive]}>
+              <Text
+                style={[styles.stepNumber, active && styles.stepNumberActive]}
+              >
                 {index + 1}
               </Text>
             </View>

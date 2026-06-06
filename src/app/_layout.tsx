@@ -1,3 +1,4 @@
+import { palette } from "@/components/ui/projectmatch-ui";
 import { useAuthGuard } from "@/hooks/useAuthGuard";
 import { Stack } from "expo-router";
 import { ActivityIndicator, View } from "react-native";
@@ -12,10 +13,10 @@ export default function RootLayout() {
           flex: 1,
           alignItems: "center",
           justifyContent: "center",
-          backgroundColor: "#0b1020",
+          backgroundColor: palette.background,
         }}
       >
-        <ActivityIndicator color="#ffffff" size="large" />
+        <ActivityIndicator color={palette.primary} size="large" />
       </View>
     );
   }

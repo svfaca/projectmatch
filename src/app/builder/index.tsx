@@ -1,3 +1,13 @@
+import {
+    AppButton,
+    BrandMark,
+    DashboardMetric,
+    ModernScreen,
+    ProjectCardView,
+    SectionHeader,
+    SurfaceCard,
+    palette,
+} from "@/components/ui/projectmatch-ui";
 import { router } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
@@ -24,91 +34,210 @@ const quickActions = [
   },
 ];
 
+const projects = [
+  {
+    title: "OpenCampus",
+    description:
+      "Aplicativo para mapear oportunidades acadêmicas e conectar estudantes por interesse.",
+    creator: "Mariana Costa",
+    participants: "18 participantes",
+    skills: ["React Native", "Design", "Firebase"],
+    tone: "indigo" as const,
+  },
+  {
+    title: "HackSprint",
+    description:
+      "Espaço para formar squads rápidas e transformar ideias em protótipos úteis.",
+    creator: "Bruno Lima",
+    participants: "9 participantes",
+    skills: ["Product", "API", "UX"],
+    tone: "sky" as const,
+  },
+  {
+    title: "JobMatch Uni",
+    description:
+      "Rede para conectar estudantes a projetos com fit real de skills e interesse.",
+    creator: "Patrícia Souza",
+    participants: "24 participantes",
+    skills: ["Frontend", "Comunicação", "Next"],
+    tone: "emerald" as const,
+  },
+];
+
 export default function BuilderDashboard() {
   return (
-    <View style={styles.container}>
+    <ModernScreen scrollable contentStyle={styles.container}>
+      <View style={styles.headerRow}>
+        <View>
+          <BrandMark compact />
+          <Text style={styles.kicker}>Builder dashboard</Text>
+        </View>
+        <AppButton
+          title="Explorar"
+          onPress={() => router.push("/builder/swipe")}
+          style={styles.headerButton}
+        />
+      </View>
+
       <View style={styles.hero}>
-        <Text style={styles.kicker}>Builder Dashboard</Text>
-        <Text style={styles.title}>Encontre projetos para construir</Text>
+        <Text style={styles.title}>Encontre projetos para construir.</Text>
         <Text style={styles.subtitle}>
-          Comece pelo que importa: descobrir projetos, salvar interesses e
-          acompanhar suas conversas.
+          Descubra oportunidades, salve interesses e acompanhe conexões com
+          visual de feed moderno.
         </Text>
       </View>
 
-      <View style={styles.grid}>
-        {quickActions.map((action) => (
-          <Pressable
-            key={action.title}
-            onPress={() => router.push(action.href as any)}
-            style={({ pressed }) => [
-              styles.card,
-              pressed && styles.cardPressed,
-            ]}
-          >
-            <Text style={styles.cardTitle}>{action.title}</Text>
-            <Text style={styles.cardDescription}>{action.description}</Text>
-          </Pressable>
-        ))}
+      <View style={styles.metricsRow}>
+        <DashboardMetric
+          value="05"
+          label="Novos projetos"
+          hint="Nesta semana"
+        />
+        <DashboardMetric
+          value="12"
+          label="Curtidos"
+          hint="Favoritos salvos"
+          tone="sky"
+        />
       </View>
-    </View>
+
+      <View style={styles.metricsRow}>
+        <DashboardMetric
+          value="03"
+          label="Matches"
+          hint="Prontos para conversar"
+          tone="emerald"
+        />
+        <DashboardMetric
+          value="09"
+          label="Mensagens"
+          hint="Conversas ativas"
+          tone="indigo"
+        />
+      </View>
+
+      <SurfaceCard style={styles.actionCard}>
+        <SectionHeader
+          title="Atalhos"
+          subtitle="Pontos de entrada rápidos para o que você mais usa."
+        />
+
+        <View style={styles.quickActionList}>
+          {quickActions.map((action) => (
+            <Pressable
+              key={action.title}
+              onPress={() => router.push(action.href as any)}
+              style={({ pressed }) => [
+                styles.quickAction,
+                pressed && styles.quickActionPressed,
+              ]}
+            >
+              <Text style={styles.quickActionTitle}>{action.title}</Text>
+              <Text style={styles.quickActionDescription}>
+                {action.description}
+              </Text>
+            </Pressable>
+          ))}
+        </View>
+      </SurfaceCard>
+
+      <View style={styles.sectionSpacing}>
+        <SectionHeader
+          title="Projetos em destaque"
+          subtitle="Cards grandes com as informações mais importantes em primeiro plano."
+          actionLabel="Ver matches"
+          onActionPress={() => router.push("/builder/matches")}
+        />
+
+        <View style={styles.projectList}>
+          {projects.map((project) => (
+            <ProjectCardView
+              key={project.title}
+              title={project.title}
+              description={project.description}
+              creator={project.creator}
+              participants={project.participants}
+              skills={project.skills}
+              tone={project.tone}
+            />
+          ))}
+        </View>
+      </View>
+    </ModernScreen>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: "#0b1020",
-    padding: 24,
-    gap: 24,
+    gap: 18,
+  },
+  headerRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 16,
+  },
+  headerButton: {
+    minWidth: 120,
   },
   hero: {
-    marginTop: 36,
     gap: 10,
   },
   kicker: {
-    color: "#93c5fd",
-    fontSize: 13,
+    color: palette.primary,
+    fontSize: 12,
     fontWeight: "700",
-    letterSpacing: 1.2,
+    letterSpacing: 1,
     textTransform: "uppercase",
+    marginTop: 8,
   },
   title: {
-    color: "#ffffff",
-    fontSize: 32,
-    lineHeight: 38,
+    color: palette.textPrimary,
+    fontSize: 30,
+    lineHeight: 36,
     fontWeight: "800",
-    letterSpacing: -0.6,
+    letterSpacing: -0.7,
   },
   subtitle: {
-    color: "#cbd5e1",
+    color: palette.textSecondary,
     fontSize: 16,
     lineHeight: 24,
-    maxWidth: 520,
   },
-  grid: {
+  metricsRow: {
+    flexDirection: "row",
     gap: 12,
   },
-  card: {
-    borderRadius: 20,
-    padding: 18,
-    backgroundColor: "#121a33",
+  actionCard: {
+    gap: 16,
+  },
+  quickActionList: {
+    gap: 10,
+  },
+  quickAction: {
+    borderRadius: 18,
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.08)",
-    gap: 6,
+    borderColor: palette.border,
+    backgroundColor: palette.background,
+    padding: 16,
+    gap: 4,
   },
-  cardPressed: {
-    opacity: 0.9,
-    transform: [{ scale: 0.99 }],
+  quickActionPressed: {
+    opacity: 0.92,
   },
-  cardTitle: {
-    color: "#ffffff",
-    fontSize: 18,
+  quickActionTitle: {
+    color: palette.textPrimary,
+    fontSize: 16,
     fontWeight: "700",
   },
-  cardDescription: {
-    color: "#cbd5e1",
+  quickActionDescription: {
+    color: palette.textSecondary,
     fontSize: 14,
     lineHeight: 20,
+  },
+  sectionSpacing: {
+    gap: 14,
+  },
+  projectList: {
+    gap: 12,
   },
 });

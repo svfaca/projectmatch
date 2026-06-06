@@ -1,5 +1,12 @@
+import {
+  AppButton,
+  BrandMark,
+  ModernScreen,
+  SurfaceCard,
+  palette,
+} from "@/components/ui/projectmatch-ui";
 import { router } from "expo-router";
-import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Alert, StyleSheet, Text, View } from "react-native";
 import { signInWithGoogle } from "../services/auth";
 import { getUserProfile, reactivateUserAccount } from "../services/users";
 
@@ -63,37 +70,76 @@ export default function LoginScreen() {
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Entrar</Text>
+    <ModernScreen contentStyle={styles.container}>
+      <SurfaceCard style={styles.card}>
+        <BrandMark compact />
 
-      <TouchableOpacity style={styles.googleButton} onPress={handleGoogleLogin}>
-        <Text style={styles.googleText}>Continuar com Google</Text>
-      </TouchableOpacity>
-    </View>
+        <View style={styles.textBlock}>
+          <Text style={styles.kicker}>Bem-vindo de volta</Text>
+          <Text style={styles.title}>
+            Entre para continuar construindo projetos.
+          </Text>
+          <Text style={styles.subtitle}>
+            Use sua conta Google para acessar projetos, conexões e conversas em
+            andamento.
+          </Text>
+        </View>
+
+        <AppButton
+          title="Continuar com Google"
+          onPress={handleGoogleLogin}
+          leadingElement={
+            <View style={styles.googleIcon}>
+              <Text style={styles.googleIconText}>G</Text>
+            </View>
+          }
+        />
+      </SurfaceCard>
+    </ModernScreen>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#0b1020",
+  },
+  card: {
+    gap: 20,
+  },
+  textBlock: {
+    gap: 10,
+  },
+  kicker: {
+    color: palette.primary,
+    fontSize: 13,
+    fontWeight: "800",
+    letterSpacing: 1,
+    textTransform: "uppercase",
   },
   title: {
-    color: "#ffffff",
-    fontSize: 24,
-    fontWeight: "700",
+    color: palette.textPrimary,
+    fontSize: 26,
+    lineHeight: 32,
+    fontWeight: "800",
+    letterSpacing: -0.5,
   },
-  googleButton: {
-    marginTop: 20,
-    padding: 10,
-    backgroundColor: "#4285F4",
-    borderRadius: 5,
-  },
-  googleText: {
-    color: "#fff",
+  subtitle: {
+    color: palette.textSecondary,
     fontSize: 16,
-    fontWeight: "600",
+    lineHeight: 24,
+  },
+  googleIcon: {
+    width: 24,
+    height: 24,
+    borderRadius: 8,
+    backgroundColor: "#FFFFFF",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  googleIconText: {
+    color: "#4285F4",
+    fontSize: 13,
+    fontWeight: "800",
   },
 });

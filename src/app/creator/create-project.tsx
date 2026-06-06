@@ -1,11 +1,17 @@
+import {
+  AppButton,
+  AppTextField,
+  BrandMark,
+  ModernScreen,
+  SurfaceCard,
+  palette,
+} from "@/components/ui/projectmatch-ui";
 import { auth } from "@/services/firebase";
 import { createProject } from "@/services/projects";
 import { getUserProfile } from "@/services/users";
 import { router } from "expo-router";
 import { useState } from "react";
-import {
 import { Alert, StyleSheet, Text, View } from "react-native";
-} from "react-native";
 
 export default function CreateProjectScreen() {
   const [title, setTitle] = useState("");
@@ -55,112 +61,101 @@ export default function CreateProjectScreen() {
   }
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={{ padding: 20 }}
-    >
-      <Text style={styles.heading}>Criar projeto</Text>
-
-      <Text style={styles.label}>Título</Text>
-      <TextInput
-        style={styles.input}
-        value={title}
-        onChangeText={setTitle}
-        placeholder="Título do projeto"
-        placeholderTextColor="#94a3b8"
-      />
-
-      <Text style={styles.label}>Problema</Text>
-      <TextInput
-        style={styles.input}
-        value={problem}
-        onChangeText={setProblem}
-        placeholder="Qual problema o projeto resolve?"
-        placeholderTextColor="#94a3b8"
-      />
-
-      <Text style={styles.label}>Descrição</Text>
-      <TextInput
-        style={[styles.input, { height: 120 }]}
-        value={description}
-        onChangeText={setDescription}
-        multiline
-        placeholder="Descrição do projeto"
-        placeholderTextColor="#94a3b8"
-      />
-
-      <Text style={styles.label}>Objetivo</Text>
-      <TextInput
-        style={styles.input}
-        value={objective}
-        onChangeText={setObjective}
-        placeholder="Objetivo do projeto"
-        placeholderTextColor="#94a3b8"
-      />
-
-      <Text style={styles.label}>Skills desejadas (vírgula)</Text>
-      <TextInput
-        style={styles.input}
-        value={skills}
-        onChangeText={setSkills}
-        placeholder="React, Node, UX"
-        placeholderTextColor="#94a3b8"
-      />
-
-      <Text style={styles.label}>Quantidade de membros</Text>
-      <TextInput
-        style={styles.input}
-        value={String(membersCount)}
-        onChangeText={(v) => setMembersCount(Number(v) || 1)}
-        keyboardType="numeric"
-        placeholder="1"
-        placeholderTextColor="#94a3b8"
-      />
-
-      <TouchableOpacity
-        style={styles.primaryButton}
-        onPress={handleSave}
-        disabled={saving}
-      >
-        <Text style={styles.primaryButtonText}>
-          {saving ? "Salvando..." : "Criar projeto"}
+    <ModernScreen scrollable contentStyle={styles.container}>
+      <View style={styles.header}>
+        <BrandMark compact />
+        <Text style={styles.kicker}>Creator</Text>
+        <Text style={styles.title}>
+          Crie um projeto com uma apresentação clara.
         </Text>
-      </TouchableOpacity>
-    </ScrollView>
+        <Text style={styles.subtitle}>
+          Estruture sua ideia para atrair as pessoas certas com confiança.
+        </Text>
+      </View>
+
+      <SurfaceCard style={styles.card}>
+        <AppTextField
+          label="Título"
+          value={title}
+          onChangeText={setTitle}
+          placeholder="Título do projeto"
+        />
+
+        <AppTextField
+          label="Problema"
+          value={problem}
+          onChangeText={setProblem}
+          placeholder="Qual problema o projeto resolve?"
+        />
+
+        <AppTextField
+          label="Descrição"
+          value={description}
+          onChangeText={setDescription}
+          placeholder="Descrição do projeto"
+          multiline
+        />
+
+        <AppTextField
+          label="Objetivo"
+          value={objective}
+          onChangeText={setObjective}
+          placeholder="Objetivo do projeto"
+        />
+
+        <AppTextField
+          label="Skills desejadas (vírgula)"
+          value={skills}
+          onChangeText={setSkills}
+          placeholder="React, Node, UX"
+        />
+
+        <AppTextField
+          label="Quantidade de membros"
+          value={String(membersCount)}
+          onChangeText={(v) => setMembersCount(Number(v) || 1)}
+          keyboardType="numeric"
+          placeholder="1"
+        />
+
+        <AppButton
+          title={saving ? "Salvando..." : "Criar projeto"}
+          onPress={handleSave}
+          disabled={saving}
+        />
+      </SurfaceCard>
+    </ModernScreen>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: "#0b1020",
+    gap: 16,
   },
-  heading: {
-    color: "#fff",
-    fontSize: 22,
-    fontWeight: "700",
-    marginBottom: 12,
+  header: {
+    gap: 10,
+    paddingTop: 8,
   },
-  label: {
-    color: "#cbd5e1",
-    marginTop: 10,
+  kicker: {
+    color: palette.primary,
+    fontSize: 13,
+    fontWeight: "800",
+    letterSpacing: 1,
+    textTransform: "uppercase",
   },
-  input: {
-    marginTop: 6,
-    padding: 10,
-    borderRadius: 10,
-    backgroundColor: "rgba(255,255,255,0.04)",
-    color: "#fff",
+  title: {
+    color: palette.textPrimary,
+    fontSize: 28,
+    lineHeight: 34,
+    fontWeight: "800",
+    letterSpacing: -0.5,
   },
-  primaryButton: {
-    marginTop: 18,
-    borderRadius: 12,
-    backgroundColor: "#4f46e5",
-    paddingVertical: 12,
-    alignItems: "center",
+  subtitle: {
+    color: palette.textSecondary,
+    fontSize: 15,
+    lineHeight: 22,
   },
-  primaryButtonText: {
-    color: "#fff",
-    fontWeight: "700",
+  card: {
+    gap: 14,
   },
 });

@@ -1,5 +1,11 @@
 import { useState } from "react";
-import { StyleSheet, Text, TextInput, TextInputProps, View } from "react-native";
+import {
+    StyleSheet,
+    Text,
+    TextInput,
+    TextInputProps,
+    View,
+} from "react-native";
 
 const palette = {
   primary: "#6366F1",
@@ -14,7 +20,14 @@ type FormFieldProps = TextInputProps & {
   helperText?: string;
 };
 
-export function FormField({ label, helperText, style, onFocus, onBlur, ...props }: FormFieldProps) {
+export function FormField({
+  label,
+  helperText,
+  style,
+  onFocus,
+  onBlur,
+  ...props
+}: FormFieldProps) {
   const [focused, setFocused] = useState(false);
 
   return (

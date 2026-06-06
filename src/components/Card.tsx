@@ -1,21 +1,13 @@
 import { ReactNode } from "react";
-import { StyleSheet, View, ViewStyle } from "react-native";
+import { StyleProp, ViewStyle } from "react-native";
+
+import { SurfaceCard } from "./ui/projectmatch-ui";
 
 type CardProps = {
   children: ReactNode;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
 };
 
 export function Card({ children, style }: CardProps) {
-  return <View style={[styles.card, style]}>{children}</View>;
+  return <SurfaceCard style={style}>{children}</SurfaceCard>;
 }
-
-const styles = StyleSheet.create({
-  card: {
-    borderRadius: 20,
-    backgroundColor: "#111827",
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.08)",
-    padding: 16,
-  },
-});

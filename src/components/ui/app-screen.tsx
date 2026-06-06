@@ -1,10 +1,10 @@
 import { ReactNode } from "react";
 import {
-  ScrollView,
-  ScrollViewProps,
-  StyleSheet,
-  View,
-  ViewStyle,
+    ScrollView,
+    ScrollViewProps,
+    StyleSheet,
+    View,
+    ViewStyle,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -18,6 +18,7 @@ const palette = {
 type AppScreenProps = {
   children: ReactNode;
   scroll?: boolean;
+  scrollable?: boolean;
   contentStyle?: ViewStyle;
   scrollProps?: Omit<ScrollViewProps, "contentContainerStyle" | "children">;
 };
@@ -25,9 +26,12 @@ type AppScreenProps = {
 export function AppScreen({
   children,
   scroll = false,
+  scrollable = false,
   contentStyle,
   scrollProps,
 }: AppScreenProps) {
+  const shouldScroll = scroll || scrollable;
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <View pointerEvents="none" style={StyleSheet.absoluteFill}>
@@ -35,7 +39,7 @@ export function AppScreen({
         <View style={styles.bottomGlow} />
       </View>
 
-      {scroll ? (
+      {shouldScroll ? (
         <ScrollView
           {...scrollProps}
           contentContainerStyle={[styles.scrollContent, contentStyle]}

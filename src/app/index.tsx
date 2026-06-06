@@ -1,98 +1,123 @@
-import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import "../services/firebase";
 
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+console.log("Firebase conectado");
 
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
+import { ROLE_STORAGE_KEY } from "@/constants/storage";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { router } from "expo-router";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+
+export default function Home() {
+  async function handleStart(role: "creator" | "builder") {
+    await AsyncStorage.setItem(ROLE_STORAGE_KEY, role);
+    router.push("/login");
   }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
-    );
-  }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
+
   return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
-  );
-}
+    <View style={styles.container}>
+      <View style={styles.card}>
+        <Text style={styles.title}>ProjectMatch</Text>
+        <Text style={styles.subtitle}>
+          Criadores transformam ideias em projetos.
+          {"\n"}
+          Builders transformam projetos em realidade.
+        </Text>
 
-export default function HomeScreen() {
-  return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
-          </ThemedText>
-        </ThemedView>
+        <View style={styles.actions}>
+          <TouchableOpacity
+            style={styles.primaryButton}
+            onPress={() => handleStart("creator")}
+          >
+            <Text style={styles.primaryButtonText}>Quero criar um projeto</Text>
+          </TouchableOpacity>
 
-        <ThemedText type="code" style={styles.code}>
-          get started
-        </ThemedText>
+          <TouchableOpacity
+            style={styles.secondaryButton}
+            onPress={() => handleStart("builder")}
+          >
+            <Text style={styles.secondaryButtonText}>
+              Quero participar de projetos
+            </Text>
+          </TouchableOpacity>
 
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
-          />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
-        </ThemedView>
-
-        {Platform.OS === 'web' && <WebBadge />}
-      </SafeAreaView>
-    </ThemedView>
+          <TouchableOpacity
+            style={styles.loginButton}
+            onPress={() => router.push("/login")}
+          >
+            <Text style={styles.loginButtonText}>Já possui conta? Entrar</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
+    backgroundColor: "#0b1020",
+    justifyContent: "center",
+    padding: 24,
   },
-  safeArea: {
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
-  },
-  heroSection: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
+  card: {
+    gap: 16,
+    borderRadius: 24,
+    padding: 24,
+    backgroundColor: "#121a33",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.08)",
   },
   title: {
-    textAlign: 'center',
+    color: "#ffffff",
+    fontSize: 34,
+    fontWeight: "800",
+    letterSpacing: -0.5,
   },
-  code: {
-    textTransform: 'uppercase',
+  subtitle: {
+    color: "#c7d2fe",
+    fontSize: 16,
+    lineHeight: 24,
   },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
+  actions: {
+    gap: 12,
+    marginTop: 8,
+  },
+  primaryButton: {
+    borderRadius: 16,
+    backgroundColor: "#4f46e5",
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+  },
+  primaryButtonText: {
+    color: "#ffffff",
+    fontSize: 16,
+    fontWeight: "700",
+    textAlign: "center",
+  },
+  secondaryButton: {
+    borderRadius: 16,
+    backgroundColor: "rgba(255,255,255,0.06)",
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+  },
+  secondaryButtonText: {
+    color: "#e2e8f0",
+    fontSize: 16,
+    fontWeight: "700",
+    textAlign: "center",
+  },
+  loginButton: {
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.12)",
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    backgroundColor: "transparent",
+  },
+  loginButtonText: {
+    color: "#c7d2fe",
+    fontSize: 16,
+    fontWeight: "700",
+    textAlign: "center",
   },
 });

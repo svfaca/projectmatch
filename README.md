@@ -1,65 +1,65 @@
- # ProjectMatch
+# ProjectMatch
 
- Projeto de matchmaking para colaboradores de projetos — gerencia e conecta criadores e builders.
+Projeto de matchmaking para colaboradores de projetos — gerencia e conecta criadores e builders.
 
- ## Visão geral
+## Visão geral
 
- Web e mobile (Expo/React Native) app para criar, buscar e casar projetos com construtores interessados.
+Web e mobile (Expo/React Native) app para criar, buscar e casar projetos com construtores interessados.
 
- ## Pré-requisitos
+## Pré-requisitos
 
- - Node.js (>=16)
- - npm ou Yarn
- - Expo CLI (opcional)
+- Node.js (>=16)
+- npm ou Yarn
+- Expo CLI (opcional)
 
- ## Instalação
+## Instalação
 
- 1. Instale dependências:
+1.  Instale dependências:
 
- ```bash
- npm install
- # ou
- # yarn
- ```
+```bash
+npm install
+# ou
+# yarn
+```
 
- 2. Instale dependências nativas do Expo (se necessário):
+2.  Instale dependências nativas do Expo (se necessário):
 
- ```bash
- npx expo install
- ```
+```bash
+npx expo install
+```
 
- ## Executando
+## Executando
 
- - Iniciar o servidor de desenvolvimento:
+- Iniciar o servidor de desenvolvimento:
 
- ```bash
- npm start
- # ou
- # expo start
- ```
+```bash
+npm start
+# ou
+# expo start
+```
 
- - Abrir no emulador/dispositivo móvel via Expo Go ou no navegador (web).
+- Abrir no emulador/dispositivo móvel via Expo Go ou no navegador (web).
 
- ## Variáveis de ambiente
+## Variáveis de ambiente
 
- Coloque chaves/segredos sensíveis em um arquivo `.env` (não comitado). Exemplos:
+Coloque chaves/segredos sensíveis em um arquivo `.env` (não comitado). Exemplos:
 
- ```
- FIREBASE_API_KEY=...
- FIREBASE_AUTH_DOMAIN=...
- ```
+```
+FIREBASE_API_KEY=...
+FIREBASE_AUTH_DOMAIN=...
+```
 
- ## Estrutura
+## Estrutura
 
- Principais pastas:
+Principais pastas:
 
- - `src/` — código-fonte da aplicação
- - `assets/` — imagens e ícones
+- `src/` — código-fonte da aplicação
+- `assets/` — imagens e ícones
 
- ## Contribuição
+## Contribuição
 
- Abra PRs contra a branch `main`. Siga padrões já existentes no código.
+Abra PRs contra a branch `main`. Siga padrões já existentes no código.
 
- ## Licença
+## Licença
 
- Veja o arquivo `LICENSE`.
+Veja o arquivo `LICENSE`.

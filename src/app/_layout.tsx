@@ -1,7 +1,10 @@
 import { palette } from "@/components/ui/projectmatch-ui";
 import { useAuthGuard } from "@/hooks/useAuthGuard";
 import { Stack } from "expo-router";
+import * as WebBrowser from "expo-web-browser";
 import { ActivityIndicator, View } from "react-native";
+
+WebBrowser.maybeCompleteAuthSession();
 
 export default function RootLayout() {
   const loading = useAuthGuard();

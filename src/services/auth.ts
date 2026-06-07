@@ -1,14 +1,22 @@
 import {
   signOut as firebaseSignOut,
   GoogleAuthProvider,
-  signInWithPopup,
+  signInWithCredential,
 } from "firebase/auth";
 import { auth } from "./firebase";
 
-const provider = new GoogleAuthProvider();
+type GoogleAuthTokens = {
+  idToken?: string | null;
+  accessToken?: string | null;
+};
 
-export async function signInWithGoogle() {
-  const result = await signInWithPopup(auth, provider);
+export async function signInWithGoogle(tokens: GoogleAuthTokens) {
+  const credential = GoogleAuthProvider.credential(
+    tokens.idToken ?? null,
+    tokens.accessToken ?? null,
+  );
+
+  const result = await signInWithCredential(auth, credential);
 
   return {
     uid: result.user.uid,

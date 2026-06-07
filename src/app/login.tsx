@@ -5,15 +5,41 @@ import {
   SurfaceCard,
   palette,
 } from "@/components/ui/projectmatch-ui";
+import * as Google from "expo-auth-session/providers/google";
 import { router } from "expo-router";
+import * as WebBrowser from "expo-web-browser";
 import { Alert, StyleSheet, Text, View } from "react-native";
 import { signInWithGoogle } from "../services/auth";
 import { getUserProfile, reactivateUserAccount } from "../services/users";
 
+WebBrowser.maybeCompleteAuthSession();
+
+const GOOGLE_CLIENT_ID =
+  "153548150031-ahiq9fl61q04iuq63d9n1ojehj5200mg.apps.googleusercontent.com";
+
 export default function LoginScreen() {
+  const [request, , promptAsync] = Google.useIdTokenAuthRequest({
+    clientId: GOOGLE_CLIENT_ID,
+    webClientId: GOOGLE_CLIENT_ID,
+    androidClientId: GOOGLE_CLIENT_ID,
+    iosClientId: GOOGLE_CLIENT_ID,
+    selectAccount: true,
+  });
+
   async function handleGoogleLogin() {
     try {
-      const user = await signInWithGoogle();
+      const response = await promptAsync();
+
+      if (response.type !== "success") {
+        return;
+      }
+
+      const idToken =
+        response.authentication?.idToken ?? response.params.id_token;
+      const accessToken =
+        response.authentication?.accessToken ?? response.params.access_token;
+
+      const user = await signInWithGoogle({ idToken, accessToken });
 
       console.log("LOGIN UID", user.uid);
       console.log("LOGIN EMAIL", user.email);
@@ -88,6 +114,7 @@ export default function LoginScreen() {
         <AppButton
           title="Continuar com Google"
           onPress={handleGoogleLogin}
+          disabled={!request}
           leadingElement={
             <View style={styles.googleIcon}>
               <Text style={styles.googleIconText}>G</Text>

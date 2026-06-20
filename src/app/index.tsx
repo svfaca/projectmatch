@@ -3,12 +3,12 @@ import "../services/firebase";
 console.log("Firebase conectado");
 
 import {
-  AppButton,
-  BrandMark,
-  FeatureCard,
-  ModernScreen,
-  SurfaceCard,
-  palette,
+    AppButton,
+    BrandMark,
+    FeatureCard,
+    ModernScreen,
+    SurfaceCard,
+    palette,
 } from "@/components/ui/projectmatch-ui";
 import { ROLE_STORAGE_KEY } from "@/constants/storage";
 import { auth } from "@/services/firebase";

@@ -1,11 +1,11 @@
 import {
-    AppButton,
-    AppTextField,
-    BrandMark,
-    ModernScreen,
-    StepIndicator,
-    SurfaceCard,
-    palette,
+  AppButton,
+  AppTextField,
+  BrandMark,
+  ModernScreen,
+  StepIndicator,
+  SurfaceCard,
+  palette,
 } from "@/components/ui/projectmatch-ui";
 import { ROLE_STORAGE_KEY } from "@/constants/storage";
 import { auth } from "@/services/firebase";

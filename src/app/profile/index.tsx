@@ -105,8 +105,8 @@ export default function ProfileScreen() {
 
     try {
       await markUserAsDeleted(uid);
+      await AsyncStorage.removeItem(ROLE_STORAGE_KEY);
       await firebaseSignOut(auth);
-      await AsyncStorage.clear();
       router.replace("/");
     } catch (error) {
       console.error("DELETE ACCOUNT", error);

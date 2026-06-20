@@ -8,90 +8,178 @@ import {
 import * as Google from "expo-auth-session/providers/google";
 import { router } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
-import { Alert, StyleSheet, Text, View } from "react-native";
+import { useEffect, useState } from "react";
+import { Alert, Platform, StyleSheet, Text, View } from "react-native";
 import { signInWithGoogle } from "../services/auth";
 import { getUserProfile, reactivateUserAccount } from "../services/users";
 
 WebBrowser.maybeCompleteAuthSession();
 
-const GOOGLE_CLIENT_ID =
-  "153548150031-ahiq9fl61q04iuq63d9n1ojehj5200mg.apps.googleusercontent.com";
+const WEB_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID;
+
+const ANDROID_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID;
+
+async function loadGoogleSignin() {
+  return import("@react-native-google-signin/google-signin");
+}
+
+function isGoogleSigninError(error: unknown): error is { code: string } {
+  return typeof error === "object" && error !== null && "code" in error;
+}
 
 export default function LoginScreen() {
+  const isWeb = Platform.OS === "web";
+  const hasWebGoogleConfig = Boolean(WEB_CLIENT_ID && ANDROID_CLIENT_ID);
+  const hasNativeGoogleConfig = Boolean(WEB_CLIENT_ID);
+  const [isSigningIn, setIsSigningIn] = useState(false);
+
   const [request, , promptAsync] = Google.useIdTokenAuthRequest({
-    clientId: GOOGLE_CLIENT_ID,
-    webClientId: GOOGLE_CLIENT_ID,
-    androidClientId: GOOGLE_CLIENT_ID,
-    iosClientId: GOOGLE_CLIENT_ID,
+    webClientId: WEB_CLIENT_ID,
+    androidClientId: ANDROID_CLIENT_ID,
     selectAccount: true,
   });
 
-  async function handleGoogleLogin() {
+  useEffect(() => {
+    if (isWeb || !hasNativeGoogleConfig) {
+      return;
+    }
+
+    let isMounted = true;
+
+    void (async () => {
+      try {
+        const { GoogleSignin } = await loadGoogleSignin();
+
+        if (!isMounted) {
+          return;
+        }
+
+        GoogleSignin.configure({
+          webClientId: WEB_CLIENT_ID,
+        });
+      } catch (error) {
+        console.error("Failed to load Google Sign-In native module", error);
+      }
+    })();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [hasNativeGoogleConfig, isWeb]);
+
+  async function resolvePostLoginRoute(uid: string) {
+    let profile = null;
+
     try {
-      const response = await promptAsync();
+      profile = await getUserProfile(uid);
+    } catch (profileError) {
+      console.error("LOGIN PROFILE FETCH FAILED", profileError);
+      throw profileError;
+    }
+
+    if (profile?.status === "deleted") {
+      await reactivateUserAccount(uid);
+      profile = {
+        ...profile,
+        status: "active",
+        deletedAt: null,
+        onboardingCompleted: false,
+        role: null,
+      };
+    }
+
+    if (!profile || profile.onboardingCompleted !== true) {
+      router.replace("/onboarding");
+      return;
+    }
+
+    const nextRoute = profile.role === "creator" ? "/creator" : "/builder";
+    router.replace(nextRoute);
+  }
+
+  async function handleGoogleLogin() {
+    if (isSigningIn) {
+      return;
+    }
+
+    setIsSigningIn(true);
+
+    try {
+      if (isWeb) {
+        if (!hasWebGoogleConfig) {
+          Alert.alert(
+            "Configuração ausente",
+            "Defina EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID e EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID.",
+          );
+          return;
+        }
+
+        const response = await promptAsync();
+
+        if (response.type !== "success") {
+          return;
+        }
+
+        const idToken =
+          response.authentication?.idToken ?? response.params.id_token;
+        const accessToken =
+          response.authentication?.accessToken ?? response.params.access_token;
+
+        const user = await signInWithGoogle({ idToken, accessToken });
+        await resolvePostLoginRoute(user.uid);
+        return;
+      }
+
+      if (!hasNativeGoogleConfig) {
+        Alert.alert(
+          "Configuração ausente",
+          "Defina EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID para login no Android.",
+        );
+        return;
+      }
+
+      const { GoogleSignin } = await loadGoogleSignin();
+
+      await GoogleSignin.hasPlayServices({
+        showPlayServicesUpdateDialog: true,
+      });
+      const response = await GoogleSignin.signIn();
 
       if (response.type !== "success") {
         return;
       }
 
-      const idToken =
-        response.authentication?.idToken ?? response.params.id_token;
-      const accessToken =
-        response.authentication?.accessToken ?? response.params.access_token;
+      const idToken = response.data?.idToken;
 
-      const user = await signInWithGoogle({ idToken, accessToken });
-
-      console.log("LOGIN UID", user.uid);
-      console.log("LOGIN EMAIL", user.email);
-
-      let profile = null;
-
-      try {
-        profile = await getUserProfile(user.uid);
-      } catch (profileError) {
-        console.error("LOGIN PROFILE FETCH FAILED", profileError);
-        throw profileError;
+      if (!idToken) {
+        throw new Error("Google sign-in retornou sem idToken.");
       }
 
-      console.log("LOGIN PROFILE", JSON.stringify(profile, null, 2));
-
-      if (!profile) {
-        console.log("PROFILE NÃO EXISTE");
-      }
-
-      if (profile?.status === "deleted") {
-        console.log("LOGIN ACCOUNT REACTIVATION", user.uid);
-        await reactivateUserAccount(user.uid);
-        profile = {
-          ...profile,
-          status: "active",
-          deletedAt: null,
-          onboardingCompleted: false,
-          role: null,
-        };
-      }
-
-      if (profile?.onboardingCompleted) {
-        console.log("VAI PARA DASHBOARD", profile.role);
-      }
-
-      if (!profile || profile.onboardingCompleted !== true) {
-        console.log("LOGIN NEXT ROUTE", "/onboarding");
-        console.log("ANTES DO ROUTER", "/onboarding");
-        router.replace("/onboarding");
-        console.log("DEPOIS DO ROUTER", "/onboarding");
-        return;
-      }
-
-      const nextRoute = profile.role === "creator" ? "/creator" : "/builder";
-
-      console.log("LOGIN NEXT ROUTE", nextRoute);
-      console.log("ANTES DO ROUTER", nextRoute);
-      router.replace(nextRoute);
-      console.log("DEPOIS DO ROUTER", nextRoute);
+      const user = await signInWithGoogle({ idToken });
+      await resolvePostLoginRoute(user.uid);
     } catch (error) {
+      if (isGoogleSigninError(error)) {
+        if (error.code === "IN_PROGRESS") {
+          return;
+        }
+
+        if (error.code === "PLAY_SERVICES_NOT_AVAILABLE") {
+          Alert.alert(
+            "Google Play Services indisponível",
+            "Atualize ou habilite o Google Play Services para continuar.",
+          );
+          return;
+        }
+
+        if (error.code === "SIGN_IN_CANCELLED") {
+          return;
+        }
+      }
+
       console.error(error);
       Alert.alert("Erro no login", "Não foi possível entrar com Google.");
+    } finally {
+      setIsSigningIn(false);
     }
   }
 
@@ -112,9 +200,12 @@ export default function LoginScreen() {
         </View>
 
         <AppButton
-          title="Continuar com Google"
+          title={isSigningIn ? "Entrando..." : "Continuar com Google"}
           onPress={handleGoogleLogin}
-          disabled={!request}
+          disabled={
+            isSigningIn ||
+            (isWeb ? !request || !hasWebGoogleConfig : !hasNativeGoogleConfig)
+          }
           leadingElement={
             <View style={styles.googleIcon}>
               <Text style={styles.googleIconText}>G</Text>

@@ -11,11 +11,20 @@ import {
   palette,
 } from "@/components/ui/projectmatch-ui";
 import { ROLE_STORAGE_KEY } from "@/constants/storage";
+import { auth } from "@/services/firebase";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
-import { StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 
 export default function Home() {
+  if (auth.currentUser) {
+    return (
+      <ModernScreen contentStyle={styles.loadingContainer}>
+        <ActivityIndicator color={palette.primary} size="large" />
+      </ModernScreen>
+    );
+  }
+
   async function handleStart(role: "creator" | "builder") {
     await AsyncStorage.setItem(ROLE_STORAGE_KEY, role);
     router.push("/login");
@@ -83,6 +92,11 @@ export default function Home() {
 }
 
 const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   container: {
     justifyContent: "center",
     gap: 22,

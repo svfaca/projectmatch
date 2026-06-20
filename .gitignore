@@ -36,7 +36,14 @@ yarn-error.*
 *.pem
 
 # local env files
+.env
 .env*.local
+.env.*
+
+# Firebase and backend credentials
+serviceAccountKey.json
+*service-account*.json
+*firebase-adminsdk*.json
 
 # typescript
 *.tsbuildinfo

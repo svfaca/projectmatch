@@ -1,243 +1,256 @@
-import {
-    AppButton,
-    BrandMark,
-    DashboardMetric,
-    ModernScreen,
-    ProjectCardView,
-    SectionHeader,
-    SurfaceCard,
-    palette,
-} from "@/components/ui/projectmatch-ui";
+import { BottomNavigation } from "@/components/builder-home/BottomNavigation";
+import { CategoryChip } from "@/components/builder-home/CategoryChip";
+import { Header } from "@/components/builder-home/Header";
+import { ProfileProgressCard } from "@/components/builder-home/ProfileProgressCard";
+import { ProjectCard } from "@/components/builder-home/ProjectCard";
+import { SearchBar } from "@/components/builder-home/SearchBar";
+import { auth } from "@/services/firebase";
 import { router } from "expo-router";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { useMemo, useState } from "react";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-const quickActions = [
+const categories = [
+  "Todos",
+  "💻 Tecnologia",
+  "📊 Dados",
+  "🎨 Design",
+  "📚 Pesquisa",
+  "🔬 IA",
+  "📱 Mobile",
+];
+
+const recommendedProjects = [
   {
-    title: "🔍 Encontrar Projetos",
-    description: "Explorar oportunidades ativas e iniciar conversas.",
-    href: "/builder/swipe",
+    title: "Sistema de Gestao Hospitalar",
+    institution: "UNIFESO",
+    stack: ["React", "Firebase", "TypeScript"],
+    applicants: 12,
+    slots: 5,
+    category: "💻 Tecnologia",
   },
   {
-    title: "❤️ Meus Interesses",
-    description: "Ver projetos já curtidos e acompanhar próximos passos.",
-    href: "/builder/matches",
+    title: "App de Saude Universitaria",
+    institution: "UFRJ",
+    stack: ["Flutter", "Node", "Figma"],
+    applicants: 7,
+    slots: 2,
+    category: "📱 Mobile",
   },
   {
-    title: "💬 Conversas",
-    description: "Acessar as trocas em andamento.",
-    href: "/builder/matches",
-  },
-  {
-    title: "👤 Perfil",
-    description: "Editar dados e preferências do builder.",
-    href: "/profile",
+    title: "Laboratorio de Visao Computacional",
+    institution: "UFF",
+    stack: ["Python", "OpenCV", "Dados"],
+    applicants: 19,
+    slots: 4,
+    category: "🔬 IA",
   },
 ];
 
-const projects = [
+const recentProjects = [
   {
-    title: "OpenCampus",
-    description:
-      "Aplicativo para mapear oportunidades acadêmicas e conectar estudantes por interesse.",
-    creator: "Mariana Costa",
-    participants: "18 participantes",
-    skills: ["React Native", "Design", "Firebase"],
-    tone: "indigo" as const,
+    title: "Plataforma EAD Interativa",
+    institution: "UNIRIO",
+    stack: ["React", "Node"],
+    applicants: 6,
+    slots: 3,
   },
   {
-    title: "HackSprint",
-    description:
-      "Espaço para formar squads rápidas e transformar ideias em protótipos úteis.",
-    creator: "Bruno Lima",
-    participants: "9 participantes",
-    skills: ["Product", "API", "UX"],
-    tone: "sky" as const,
-  },
-  {
-    title: "JobMatch Uni",
-    description:
-      "Rede para conectar estudantes a projetos com fit real de skills e interesse.",
-    creator: "Patrícia Souza",
-    participants: "24 participantes",
-    skills: ["Frontend", "Comunicação", "Next"],
-    tone: "emerald" as const,
+    title: "Sistema Academico Inteligente",
+    institution: "UERJ",
+    stack: ["Next", "Prisma"],
+    applicants: 4,
+    slots: 2,
   },
 ];
 
 export default function BuilderDashboard() {
+  const [searchValue, setSearchValue] = useState("");
+  const [activeCategory, setActiveCategory] = useState("Todos");
+
+  const userName = auth.currentUser?.displayName ?? "Savio";
+
+  const filteredRecommendedProjects = useMemo(() => {
+    const query = searchValue.trim().toLowerCase();
+
+    return recommendedProjects.filter((project) => {
+      const matchesCategory =
+        activeCategory === "Todos" || project.category === activeCategory;
+
+      const matchesSearch =
+        query.length === 0 ||
+        project.title.toLowerCase().includes(query) ||
+        project.stack.some((item) => item.toLowerCase().includes(query));
+
+      return matchesCategory && matchesSearch;
+    });
+  }, [activeCategory, searchValue]);
+
   return (
-    <ModernScreen scrollable contentStyle={styles.container}>
-      <View style={styles.headerRow}>
-        <View>
-          <BrandMark compact />
-          <Text style={styles.kicker}>Builder dashboard</Text>
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        <Header name={userName} onAvatarPress={() => router.push("/profile")} />
+
+        <SearchBar value={searchValue} onChangeText={setSearchValue} />
+
+        <ProfileProgressCard
+          progress={80}
+          onPress={() => router.push("/profile")}
+        />
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Categorias</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            <View style={styles.chipRow}>
+              {categories.map((category) => (
+                <CategoryChip
+                  key={category}
+                  label={category}
+                  selected={activeCategory === category}
+                  onPress={() => setActiveCategory(category)}
+                />
+              ))}
+            </View>
+          </ScrollView>
         </View>
-        <AppButton
-          title="Explorar"
-          onPress={() => router.push("/builder/swipe")}
-          style={styles.headerButton}
-        />
-      </View>
 
-      <View style={styles.hero}>
-        <Text style={styles.title}>Encontre projetos para construir.</Text>
-        <Text style={styles.subtitle}>
-          Descubra oportunidades, salve interesses e acompanhe conexões com
-          visual de feed moderno.
-        </Text>
-      </View>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Projetos Recomendados</Text>
+          <View style={styles.listColumn}>
+            {filteredRecommendedProjects.map((project) => (
+              <ProjectCard
+                key={project.title}
+                title={project.title}
+                institution={project.institution}
+                stack={project.stack}
+                applicants={project.applicants}
+                slots={project.slots}
+                onApply={() => router.push("/builder/swipe")}
+              />
+            ))}
 
-      <View style={styles.metricsRow}>
-        <DashboardMetric
-          value="05"
-          label="Novos projetos"
-          hint="Nesta semana"
-        />
-        <DashboardMetric
-          value="12"
-          label="Curtidos"
-          hint="Favoritos salvos"
-          tone="sky"
-        />
-      </View>
-
-      <View style={styles.metricsRow}>
-        <DashboardMetric
-          value="03"
-          label="Matches"
-          hint="Prontos para conversar"
-          tone="emerald"
-        />
-        <DashboardMetric
-          value="09"
-          label="Mensagens"
-          hint="Conversas ativas"
-          tone="indigo"
-        />
-      </View>
-
-      <SurfaceCard style={styles.actionCard}>
-        <SectionHeader
-          title="Atalhos"
-          subtitle="Pontos de entrada rápidos para o que você mais usa."
-        />
-
-        <View style={styles.quickActionList}>
-          {quickActions.map((action) => (
-            <Pressable
-              key={action.title}
-              onPress={() => router.push(action.href as any)}
-              style={({ pressed }) => [
-                styles.quickAction,
-                pressed && styles.quickActionPressed,
-              ]}
-            >
-              <Text style={styles.quickActionTitle}>{action.title}</Text>
-              <Text style={styles.quickActionDescription}>
-                {action.description}
-              </Text>
-            </Pressable>
-          ))}
+            {filteredRecommendedProjects.length === 0 ? (
+              <View style={styles.emptyCard}>
+                <Text style={styles.emptyTitle}>Nenhum projeto encontrado</Text>
+                <Text style={styles.emptyText}>
+                  Tente outra busca ou selecione uma categoria diferente.
+                </Text>
+              </View>
+            ) : null}
+          </View>
         </View>
-      </SurfaceCard>
 
-      <View style={styles.sectionSpacing}>
-        <SectionHeader
-          title="Projetos em destaque"
-          subtitle="Cards grandes com as informações mais importantes em primeiro plano."
-          actionLabel="Ver matches"
-          onActionPress={() => router.push("/builder/matches")}
-        />
-
-        <View style={styles.projectList}>
-          {projects.map((project) => (
-            <ProjectCardView
-              key={project.title}
-              title={project.title}
-              description={project.description}
-              creator={project.creator}
-              participants={project.participants}
-              skills={project.skills}
-              tone={project.tone}
-            />
-          ))}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Projetos Recentes</Text>
+          <View style={styles.listColumn}>
+            {recentProjects.map((project) => (
+              <ProjectCard
+                key={project.title}
+                title={project.title}
+                institution={project.institution}
+                stack={project.stack}
+                applicants={project.applicants}
+                slots={project.slots}
+                onApply={() => router.push("/builder/swipe")}
+              />
+            ))}
+          </View>
         </View>
-      </View>
-    </ModernScreen>
+
+        <View style={styles.bottomSpacer} />
+      </ScrollView>
+
+      <BottomNavigation
+        items={[
+          {
+            key: "home",
+            icon: "🏠",
+            label: "Inicio",
+            active: true,
+            onPress: () => router.push("/builder"),
+          },
+          {
+            key: "search",
+            icon: "🔍",
+            label: "Buscar",
+            onPress: () => router.push("/builder/swipe"),
+          },
+          {
+            key: "projects",
+            icon: "📁",
+            label: "Projetos",
+            onPress: () => router.push("/builder/matches"),
+          },
+          {
+            key: "alerts",
+            icon: "🔔",
+            label: "Alertas",
+            onPress: () => router.push("/builder/matches"),
+          },
+          {
+            key: "profile",
+            icon: "👤",
+            label: "Perfil",
+            onPress: () => router.push("/profile"),
+          },
+        ]}
+      />
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  safeArea: {
+    flex: 1,
+    backgroundColor: "#F8FAFC",
+  },
+  content: {
+    paddingHorizontal: 20,
+    paddingTop: 14,
+    paddingBottom: 10,
     gap: 18,
   },
-  headerRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: 16,
-  },
-  headerButton: {
-    minWidth: 120,
-  },
-  hero: {
-    gap: 10,
-  },
-  kicker: {
-    color: palette.primary,
-    fontSize: 12,
-    fontWeight: "700",
-    letterSpacing: 1,
-    textTransform: "uppercase",
-    marginTop: 8,
-  },
-  title: {
-    color: palette.textPrimary,
-    fontSize: 30,
-    lineHeight: 36,
-    fontWeight: "800",
-    letterSpacing: -0.7,
-  },
-  subtitle: {
-    color: palette.textSecondary,
-    fontSize: 16,
-    lineHeight: 24,
-  },
-  metricsRow: {
-    flexDirection: "row",
+  section: {
     gap: 12,
   },
-  actionCard: {
-    gap: 16,
+  sectionTitle: {
+    color: "#111827",
+    fontSize: 20,
+    fontWeight: "800",
+    letterSpacing: -0.2,
   },
-  quickActionList: {
+  chipRow: {
+    flexDirection: "row",
+    alignItems: "center",
     gap: 10,
+    paddingRight: 20,
   },
-  quickAction: {
-    borderRadius: 18,
+  listColumn: {
+    gap: 12,
+  },
+  emptyCard: {
+    borderRadius: 20,
+    backgroundColor: "#FFFFFF",
     borderWidth: 1,
-    borderColor: palette.border,
-    backgroundColor: palette.background,
-    padding: 16,
-    gap: 4,
+    borderColor: "#E5E7EB",
+    padding: 18,
+    gap: 6,
   },
-  quickActionPressed: {
-    opacity: 0.92,
-  },
-  quickActionTitle: {
-    color: palette.textPrimary,
+  emptyTitle: {
+    color: "#111827",
     fontSize: 16,
     fontWeight: "700",
   },
-  quickActionDescription: {
-    color: palette.textSecondary,
+  emptyText: {
+    color: "#6B7280",
     fontSize: 14,
     lineHeight: 20,
   },
-  sectionSpacing: {
-    gap: 14,
-  },
-  projectList: {
-    gap: 12,
+  bottomSpacer: {
+    height: 96,
   },
 });

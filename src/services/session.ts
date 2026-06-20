@@ -22,8 +22,6 @@ export function resolveRoleHome(role: UserRole | null) {
 export async function getSessionSnapshot(
   uid: string,
 ): Promise<SessionSnapshot> {
-  console.log("SESSION UID", uid);
-
   const profile = await getUserProfile(uid);
 
   return {

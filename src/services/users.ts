@@ -1,13 +1,11 @@
-import { ROLE_STORAGE_KEY } from "@/constants/storage";
 import type { User } from "@/types/user";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
-  deleteField,
-  doc,
-  getDoc,
-  serverTimestamp,
-  setDoc,
-  updateDoc,
+    deleteField,
+    doc,
+    getDoc,
+    serverTimestamp,
+    setDoc,
+    updateDoc,
 } from "firebase/firestore";
 import { db } from "./firebase";
 
@@ -24,13 +22,6 @@ export async function getUsers(): Promise<User[]> {
 export async function saveAuthenticatedUser(
   user: Pick<User, "uid" | "name" | "email" | "photoUrl">,
 ) {
-  console.log("SAVE USER UID", user.uid);
-
-  const storedRole = await AsyncStorage.getItem(ROLE_STORAGE_KEY);
-  const role =
-    storedRole === "creator" || storedRole === "builder"
-      ? storedRole
-      : "builder";
   const userRef = doc(db, "users", user.uid);
   const userSnapshot = await getDoc(userRef);
 
@@ -40,7 +31,6 @@ export async function saveAuthenticatedUser(
       uid: user.uid,
       name: user.name,
       email: user.email,
-      role,
       ...(!userSnapshot.exists()
         ? {
             status: "active",
@@ -136,7 +126,9 @@ export async function saveOnboardingData(
   await setDoc(
     userRef,
     removeUndefined({
+      uid,
       ...data,
+      status: "active",
       onboardingCompleted: data.onboardingCompleted ?? true,
       updatedAt: serverTimestamp(),
     }),

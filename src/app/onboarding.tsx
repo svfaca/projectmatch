@@ -124,8 +124,23 @@ export default function OnboardingScreen() {
 
   if (!role) {
     return (
-      <ModernScreen contentStyle={styles.loadingState}>
-        <Text style={styles.errorTitle}>Role não selecionado</Text>
+      <ModernScreen contentStyle={styles.rolePicker}>
+        <BrandMark compact />
+        <Text style={styles.roleTitle}>Como deseja usar o ProjectMatch?</Text>
+        <AppButton
+          title="Sou Criador — tenho uma ideia de projeto"
+          onPress={async () => {
+            await AsyncStorage.setItem(ROLE_STORAGE_KEY, "creator");
+            setRole("creator");
+          }}
+        />
+        <AppButton
+          title="Sou Builder — quero contribuir com projetos"
+          onPress={async () => {
+            await AsyncStorage.setItem(ROLE_STORAGE_KEY, "builder");
+            setRole("builder");
+          }}
+        />
       </ModernScreen>
     );
   }
@@ -145,7 +160,7 @@ export default function OnboardingScreen() {
 
       <StepIndicator
         steps={["Perfil", role === "creator" ? "Ideia" : "Skills", "Concluir"]}
-        activeStep={1}
+        currentStep={1}
       />
 
       <SurfaceCard style={styles.card}>
@@ -226,9 +241,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  errorTitle: {
+  rolePicker: {
+    gap: 16,
+    alignItems: "stretch",
+    justifyContent: "center",
+    paddingHorizontal: 8,
+  },
+  roleTitle: {
     color: palette.textPrimary,
-    fontSize: 20,
-    fontWeight: "700",
+    fontSize: 22,
+    fontWeight: "800",
+    textAlign: "center",
+    marginBottom: 8,
   },
 });

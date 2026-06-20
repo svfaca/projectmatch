@@ -25,13 +25,30 @@ const initialState: GuardState = {
 export function useAuthGuard() {
   const pathname = usePathname();
   const [state, setState] = useState<GuardState>(initialState);
+  const [initialAuthCheck, setInitialAuthCheck] = useState(false);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      console.log("GUARD AUTH STATE", {
-        uid: user?.uid ?? null,
-        pathname,
+    let active = true;
+
+    auth
+      .authStateReady()
+      .catch((error) => {
+        console.error(error);
+      })
+      .finally(() => {
+        if (active) {
+          setInitialAuthCheck(true);
+        }
       });
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      console.log("AUTH STATE", user?.uid);
 
       if (!user) {
         setState({
@@ -66,6 +83,8 @@ export function useAuthGuard() {
     const unsubscribe = onSnapshot(
       userRef,
       (snapshot) => {
+        console.log("USER DOC", JSON.stringify(snapshot.data(), null, 2));
+
         const data = snapshot.data() as User | undefined;
 
         setState((current) => ({
@@ -97,21 +116,30 @@ export function useAuthGuard() {
   }, [state.uid]);
 
   useEffect(() => {
-    if (state.loading) {
+    console.log(
+      "GUARD",
+      JSON.stringify(
+        {
+          pathname,
+          loading: state.loading,
+          initialAuthCheck,
+          uid: state.uid,
+          role: state.role,
+          onboardingCompleted: state.onboardingCompleted,
+          status: state.status,
+        },
+        null,
+        2,
+      ),
+    );
+
+    if (state.loading || !initialAuthCheck) {
       return;
     }
 
-    console.log("GUARD ROUTE CHECK", {
-      pathname,
-      uid: state.uid,
-      role: state.role,
-      onboardingCompleted: state.onboardingCompleted,
-      status: state.status,
-    });
-
     if (!state.uid) {
       if (!isPublicRoute(pathname)) {
-        console.log("GUARD -> HOME");
+        console.log("REDIRECT ->", "/");
         router.replace("/");
       }
 
@@ -119,44 +147,49 @@ export function useAuthGuard() {
     }
 
     if (state.status === "deleted") {
-      if (pathname !== "/login") {
-        console.log("GUARD -> LOGIN");
-        router.replace("/login");
+      if (pathname !== "/") {
+        console.log("REDIRECT ->", "/");
+        router.replace("/");
       }
 
       return;
     }
 
     if (!state.onboardingCompleted && pathname !== "/onboarding") {
-      console.log("GUARD -> ONBOARDING");
+      console.log("REDIRECT ->", "/onboarding");
       router.replace("/onboarding");
       return;
     }
 
     if (pathname === "/onboarding" && state.onboardingCompleted) {
-      console.log("GUARD -> ROLE HOME", resolveRoleHome(state.role));
-      router.replace(resolveRoleHome(state.role));
+      const destination = resolveRoleHome(state.role);
+      console.log("REDIRECT ->", destination);
+      router.replace(destination);
       return;
     }
 
     if (pathname === "/" || pathname === "/login") {
-      console.log("GUARD -> ROLE HOME", resolveRoleHome(state.role));
-      router.replace(resolveRoleHome(state.role));
+      const destination = resolveRoleHome(state.role);
+      console.log("REDIRECT ->", destination);
+      router.replace(destination);
       return;
     }
 
     if (pathname.startsWith("/creator") && state.role !== "creator") {
-      console.log("GUARD -> ROLE HOME", resolveRoleHome(state.role));
-      router.replace(resolveRoleHome(state.role));
+      const destination = resolveRoleHome(state.role);
+      console.log("REDIRECT ->", destination);
+      router.replace(destination);
       return;
     }
 
     if (pathname.startsWith("/builder") && state.role !== "builder") {
-      console.log("GUARD -> ROLE HOME", resolveRoleHome(state.role));
-      router.replace(resolveRoleHome(state.role));
+      const destination = resolveRoleHome(state.role);
+      console.log("REDIRECT ->", destination);
+      router.replace(destination);
     }
   }, [
     pathname,
+    initialAuthCheck,
     state.loading,
     state.onboardingCompleted,
     state.role,

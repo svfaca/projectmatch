@@ -23,16 +23,17 @@ const firebaseConfig = {
 };
 
 console.log(
-  'FirebaseAuth exports:',
-  Object.keys(FirebaseAuth).filter(k =>
-    k.toLowerCase().includes('persistence') ||
-    k.toLowerCase().includes('auth')
-  )
+  "FirebaseAuth exports:",
+  Object.keys(FirebaseAuth).filter(
+    (k) =>
+      k.toLowerCase().includes("persistence") ||
+      k.toLowerCase().includes("auth"),
+  ),
 );
 
 console.log(
-  'getReactNativePersistence type:',
-  typeof (FirebaseAuth as any).getReactNativePersistence
+  "getReactNativePersistence type:",
+  typeof (FirebaseAuth as any).getReactNativePersistence,
 );
 
 const app = initializeApp(firebaseConfig);

@@ -1,11 +1,11 @@
 import type { User } from "@/types/user";
 import {
-    deleteField,
-    doc,
-    getDoc,
-    serverTimestamp,
-    setDoc,
-    updateDoc,
+  deleteField,
+  doc,
+  getDoc,
+  serverTimestamp,
+  setDoc,
+  updateDoc,
 } from "firebase/firestore";
 import { db } from "./firebase";
 

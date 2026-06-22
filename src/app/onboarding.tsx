@@ -1,33 +1,33 @@
 import {
-  AppButton,
-  BrandMark,
-  StepIndicator,
-  SurfaceCard,
-  palette,
+    AppButton,
+    BrandMark,
+    StepIndicator,
+    SurfaceCard,
+    palette,
 } from "@/components/ui/projectmatch-ui";
 import { ROLE_STORAGE_KEY } from "@/constants/storage";
 import { auth } from "@/services/firebase";
 import { getSessionSnapshot } from "@/services/session";
 import { getUserProfile, saveOnboardingData } from "@/services/users";
 import type { ExperienceLevel, UserType } from "@/types/user";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
-  BottomSheetFlatList,
-  BottomSheetModal,
-  BottomSheetModalProvider,
-  BottomSheetTextInput,
-  BottomSheetView,
+    BottomSheetFlatList,
+    BottomSheetModal,
+    BottomSheetModalProvider,
+    BottomSheetTextInput,
+    BottomSheetView,
 } from "@gorhom/bottom-sheet";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
-  Alert,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
+    Alert,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    View,
 } from "react-native";
 
 type Role = "creator" | "builder";
@@ -168,7 +168,8 @@ export default function OnboardingScreen() {
 
   useEffect(() => {
     AsyncStorage.getItem(ROLE_STORAGE_KEY).then((value) => {
-      const nextRole = value === "creator" || value === "builder" ? value : null;
+      const nextRole =
+        value === "creator" || value === "builder" ? value : null;
       setRole(nextRole);
       setLoading(false);
     });
@@ -224,7 +225,9 @@ export default function OnboardingScreen() {
   const filteredSheetOptions = useMemo(() => {
     const normalized = sheetSearch.trim().toLowerCase();
 
-    return sheetOptions.filter((item) => item.toLowerCase().includes(normalized));
+    return sheetOptions.filter((item) =>
+      item.toLowerCase().includes(normalized),
+    );
   }, [sheetOptions, sheetSearch]);
 
   const requiredFieldsComplete = useMemo(() => {
@@ -236,9 +239,13 @@ export default function OnboardingScreen() {
       case "student":
         return university.trim().length > 0 && course.trim().length > 0;
       case "teacher":
-        return institution.trim().length > 0 && professionArea.trim().length > 0;
+        return (
+          institution.trim().length > 0 && professionArea.trim().length > 0
+        );
       case "professional":
-        return professionArea.trim().length > 0 && professionTitle.trim().length > 0;
+        return (
+          professionArea.trim().length > 0 && professionTitle.trim().length > 0
+        );
       case "founder":
         return founderMainArea.trim().length > 0 && founderHasProject !== null;
       case "enthusiast":
@@ -408,8 +415,8 @@ export default function OnboardingScreen() {
             <Text style={styles.kicker}>Onboarding</Text>
             <Text style={styles.title}>Seu perfil, sem friccao.</Text>
             <Text style={styles.subtitle}>
-              Agora o cadastro e condicional, com menos digitacao e mais qualidade
-              de dados para matching.
+              Agora o cadastro e condicional, com menos digitacao e mais
+              qualidade de dados para matching.
             </Text>
           </View>
 
@@ -531,7 +538,9 @@ export default function OnboardingScreen() {
                 placeholder="Ex.: Desenvolvedor focado em React Native e IA."
                 multiline
               />
-              <Text style={styles.helperText}>{bio.length}/{BIO_LIMIT}</Text>
+              <Text style={styles.helperText}>
+                {bio.length}/{BIO_LIMIT}
+              </Text>
             </View>
 
             <View style={styles.blockSpacing}>
@@ -548,8 +557,9 @@ export default function OnboardingScreen() {
                 label="Nivel de experiencia"
                 options={EXPERIENCE_OPTIONS.map((item) => item.label)}
                 selected={
-                  EXPERIENCE_OPTIONS.find((item) => item.value === experienceLevel)
-                    ?.label ?? null
+                  EXPERIENCE_OPTIONS.find(
+                    (item) => item.value === experienceLevel,
+                  )?.label ?? null
                 }
                 onSelect={(label) => {
                   const level = EXPERIENCE_OPTIONS.find(
@@ -696,7 +706,12 @@ function UserTypeGrid({
             ]}
           >
             <Text style={styles.userTypeEmoji}>{option.emoji}</Text>
-            <Text style={[styles.userTypeLabel, active && styles.userTypeLabelActive]}>
+            <Text
+              style={[
+                styles.userTypeLabel,
+                active && styles.userTypeLabelActive,
+              ]}
+            >
               {option.label}
             </Text>
             <Text style={styles.userTypeDescription}>{option.description}</Text>
@@ -783,7 +798,12 @@ function ToggleOption({
         pressed && styles.pressed,
       ]}
     >
-      <Text style={[styles.toggleOptionText, active && styles.toggleOptionTextActive]}>
+      <Text
+        style={[
+          styles.toggleOptionText,
+          active && styles.toggleOptionTextActive,
+        ]}
+      >
         {label}
       </Text>
     </Pressable>
@@ -818,7 +838,9 @@ function SingleChoiceChips({
                 pressed && styles.pressed,
               ]}
             >
-              <Text style={[styles.chipText, active && styles.chipTextSelected]}>
+              <Text
+                style={[styles.chipText, active && styles.chipTextSelected]}
+              >
                 {option}
               </Text>
             </Pressable>
@@ -851,7 +873,9 @@ function ChipSelector({
   const filteredOptions = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
 
-    return options.filter((option) => option.toLowerCase().includes(normalizedQuery));
+    return options.filter((option) =>
+      option.toLowerCase().includes(normalizedQuery),
+    );
   }, [options, query]);
 
   const normalizedQuery = query.trim();
@@ -898,7 +922,10 @@ function ChipSelector({
         {canAddCustom ? (
           <Pressable
             onPress={addCustomItem}
-            style={({ pressed }) => [styles.addChipButton, pressed && styles.pressed]}
+            style={({ pressed }) => [
+              styles.addChipButton,
+              pressed && styles.pressed,
+            ]}
           >
             <Text style={styles.addChipButtonText}>Adicionar</Text>
           </Pressable>
@@ -939,7 +966,9 @@ function ChipSelector({
                   pressed && styles.pressed,
                 ]}
               >
-                <Text style={[styles.chipText, active && styles.chipTextSelected]}>
+                <Text
+                  style={[styles.chipText, active && styles.chipTextSelected]}
+                >
                   {item}
                 </Text>
               </Pressable>
@@ -1002,12 +1031,17 @@ function SearchablePickerSheet({
           renderItem={({ item }) => (
             <Pressable
               onPress={() => onSelect(item)}
-              style={({ pressed }) => [styles.sheetOption, pressed && styles.pressed]}
+              style={({ pressed }) => [
+                styles.sheetOption,
+                pressed && styles.pressed,
+              ]}
             >
               <Text style={styles.sheetOptionText}>{item}</Text>
             </Pressable>
           )}
-          ListEmptyComponent={<Text style={styles.emptyHint}>Nenhum resultado encontrado.</Text>}
+          ListEmptyComponent={
+            <Text style={styles.emptyHint}>Nenhum resultado encontrado.</Text>
+          }
         />
       </BottomSheetView>
     </BottomSheetModal>

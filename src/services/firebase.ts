@@ -22,6 +22,19 @@ const firebaseConfig = {
   appId: getRequiredEnv("EXPO_PUBLIC_FIREBASE_APP_ID"),
 };
 
+console.log(
+  'FirebaseAuth exports:',
+  Object.keys(FirebaseAuth).filter(k =>
+    k.toLowerCase().includes('persistence') ||
+    k.toLowerCase().includes('auth')
+  )
+);
+
+console.log(
+  'getReactNativePersistence type:',
+  typeof (FirebaseAuth as any).getReactNativePersistence
+);
+
 const app = initializeApp(firebaseConfig);
 
 const getReactNativePersistence = (
